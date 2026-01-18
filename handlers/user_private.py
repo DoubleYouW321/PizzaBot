@@ -1,13 +1,29 @@
-from aiogram import Router
-from aiogram.filters import CommandStart, Command
+from aiogram import Router, F
+from aiogram.filters import CommandStart, Command, or_f
 from aiogram.types import Message
+import keyboards.keyboard as kb
 
 user_router = Router()
 
 @user_router.message(CommandStart())
 async def cmd_start(message: Message):
-    await message.answer("Приветствуем вас в онлайн пиццерии W_Pizza")
+    await message.answer("Приветствуем вас в онлайн пиццерии W_Pizza", reply_markup=kb.start_kb3.as_markup(
+        resize_keyboard=True,
+        input_field_placeholder="What block are you interested in?"
+    ))
 
-@user_router.message(Command('menu'))
+@user_router.message(or_f(Command('menu'), (F.text.lower() == "menu")))
 async def menu(message: Message):
-    await message.answer('Меню')
+    await message.answer('Меню:', reply_markup=kb.del_kb)
+
+@user_router.message(or_f(Command('about'), (F.text.lower() == "about")))
+async def about(message: Message):
+    await message.answer('Описание бота в разработке...')
+
+@user_router.message(or_f(Command('payment'), (F.text.lower() == "payment vars")))
+async def payment(message: Message):
+    await message.answer('Способы оплаты:')
+    
+@user_router.message(or_f(Command('shipping'), (F.text.lower() == "variants shipping")))
+async def shipping(message: Message):
+    await message.answer('Способы доставки:')
