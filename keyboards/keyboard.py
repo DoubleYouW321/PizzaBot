@@ -31,4 +31,19 @@ start_kb3.row(
     KeyboardButton(text="feedback")
 )
 
+admin = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton(text="Добавить товар"),
+            KeyboardButton(text="Изменить товар"),
+        ],
+        [
+            KeyboardButton(text="Удалить товар"),
+            KeyboardButton(text="Посмотреть товары"),
+        ],
+    ],
+    resize_keyboard=True,
+    input_field_placeholder="Выбирите действие"
+)
+
 del_kb = ReplyKeyboardRemove()

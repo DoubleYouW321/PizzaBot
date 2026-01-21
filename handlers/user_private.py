@@ -1,6 +1,9 @@
 from aiogram import Router, F
 from aiogram.filters import CommandStart, Command, or_f
 from aiogram.types import Message
+from aiogram.enums import ParseMode
+from aiogram.utils.formatting import as_list, as_marked_section, Bold
+
 import keyboards.keyboard as kb
 
 user_router = Router()
@@ -18,12 +21,35 @@ async def menu(message: Message):
 
 @user_router.message(or_f(Command('about'), (F.text.lower() == "about")))
 async def about(message: Message):
-    await message.answer('Описание бота в разработке...')
+    await message.answer('Описание бота в разработке...', reply_markup=kb.del_kb)
 
 @user_router.message(or_f(Command('payment'), (F.text.lower() == "payment vars")))
 async def payment(message: Message):
-    await message.answer('Способы оплаты:')
+    text = as_marked_section(
+        "Способы оплаты: ", 
+        "By credit card",
+        "By cache",
+        "In the restaurant",
+        marker='✅ '
+    )
+    await message.answer(text.as_html(), reply_markup=kb.del_kb)
     
 @user_router.message(or_f(Command('shipping'), (F.text.lower() == "variants shipping")))
 async def shipping(message: Message):
-    await message.answer('Способы доставки:')
+    text = as_list(
+        as_marked_section(
+            'Shipping vars:',
+            'Курьер',
+            'Самовывоз',
+            'В ресторане поем',
+            marker='✅ '
+        ),
+        as_marked_section(
+            'Нельзя',
+            'Почта',
+            'Голуби',
+            marker='❌ '
+        ),
+        sep='\n------------------\n'
+    )
+    await message.answer(text.as_html(), reply_markup=kb.del_kb)

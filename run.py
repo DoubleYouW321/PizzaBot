@@ -8,6 +8,7 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
 from handlers.user_private import user_router
+from handlers.admin_private import admin_router
 from common.bot_cmds_list import private
 
 TOKEN = os.getenv("TOKEN")
@@ -17,7 +18,7 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
 async def main():
-    dp.include_router(user_router)
+    dp.include_routers(user_router, admin_router)
     await bot.delete_webhook(drop_pending_updates=True)
     await bot.set_my_commands(commands=private, scope=BotCommandScopeAllPrivateChats())
     await dp.start_polling(bot, allowed_updates=ALLOWED_UPDATES)
