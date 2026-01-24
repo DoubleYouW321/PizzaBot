@@ -27,12 +27,12 @@ class AddProduct(StatesGroup):
 async def admin(message: Message):
     await message.answer('Что хотите сделать?', reply_markup=kb.admin)
 
-@admin_router.message(F.text == 'ассортимент')
+@admin_router.message(F.text.lower() == 'ассортимент')
 async def look(message: Message, session: AsyncSession):
     for product in await req_get_products(session):
         await message.answer_photo(
             product.image, 
-            caption=f'''{product.name} \n {product.description} \n  Стоимость: {product.price} рублей'''
+            caption=f'''{product.name}\n{product.description}\nСтоимость: {product.price} рублей'''
         )
     await message.answer('Список товаров', reply_markup=kb.del_kb)
     

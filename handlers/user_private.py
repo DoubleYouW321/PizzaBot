@@ -22,7 +22,7 @@ async def menu(message: Message, session: AsyncSession):
     for product in await req_get_products(session):
         await message.answer_photo(
             product.image, 
-            caption=f'''{product.name} \n {product.description} \n  Стоимость: {product.price} рублей'''
+            caption=f'''{product.name}\n{product.description}\nСтоимость: {product.price} рублей'''
         )
     await message.answer('Меню', reply_markup=kb.del_kb)
 
