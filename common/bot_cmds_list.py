@@ -6,4 +6,5 @@ private = [
     BotCommand(command='about', description='описание бота'),
     BotCommand(command='payment', description='способы оплаты'),
     BotCommand(command='shipping', description='доставка'),
+    BotCommand(command='admin', description='админка'),
 ]
