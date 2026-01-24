@@ -36,4 +36,4 @@ async def req_update_product(session: AsyncSession, product_id: int, data):
 async def req_delete_product(session: AsyncSession, product_id: int):
     query = delete(Product).where(Product.id == product_id)
     await session.execute(query)
-    await session.commit
+    await session.commit()
