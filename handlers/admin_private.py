@@ -3,7 +3,9 @@ from aiogram.filters import Command, StateFilter
 from aiogram.types import Message
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from database.requests import req_add_product, req_get_product, req_delete_product, req_get_products, req_update_product
 import keyboards.keyboard as kb
 
 admin_router = Router()
@@ -25,18 +27,15 @@ class AddProduct(StatesGroup):
 async def admin(message: Message):
     await message.answer('Что хотите сделать?', reply_markup=kb.admin)
 
-@admin_router.message(F.text == 'Посмотреть товары')
-async def look(message: Message):
+@admin_router.message(F.text == 'ассортимент')
+async def look(message: Message, session: AsyncSession):
+    for product in await req_get_products(session):
+        await message.answer_photo(
+            product.image, 
+            caption=f'''{product.name} \n {product.description} \n  Стоимость: {product.price} рублей'''
+        )
     await message.answer('Список товаров', reply_markup=kb.del_kb)
     
-@admin_router.message(F.text == 'Изменить товар')
-async def edit(message: Message):
-    await message.answer('Список товаров', reply_markup=kb.del_kb)
-
-@admin_router.message(F.text == 'Удалить товар')
-async def delete(message: Message):
-    await message.answer('Выбирите товар для удаления', reply_markup=kb.del_kb)
-
 
 #FSM
 
@@ -92,9 +91,15 @@ async def photo(message: Message, state: FSMContext):
     await state.set_state(AddProduct.image)
 
 @admin_router.message(AddProduct.image, F.photo) 
-async def add_prod(message: Message, state: FSMContext):
+async def add_prod(message: Message, state: FSMContext, session: AsyncSession):
     await state.update_data(image=message.photo[-1].file_id)
-    await message.answer('Товар добавлен', reply_markup=kb.admin)
     data = await state.get_data()
-    await message.answer(str(data))
+
+    try:
+        await req_add_product(session, data)
+        await message.answer('Товар добавлен', reply_markup=kb.admin)
+    except Exception as e:
+        await message.answer(f'''Error:\n
+            {e}''', reply_markup=kb.admin)
     await state.clear()
+
